@@ -1,19 +1,14 @@
-# Use an official Node.js runtime as a parent image
-FROM node:14-alpine
+# Use the official Node.js 16 image
+FROM node:16
 
-# Define environment variable for the API URL
-ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
 
-# Set npm registry to use the official npm registry and install dependencies with retries
-RUN npm i --lockfile-version 3 --package-lock-only && \
-    npm install --retry 5
+# Install dependencies
+RUN npm install
 
 # Copy the rest of the application code
 COPY . .
@@ -24,5 +19,9 @@ RUN npm run build
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Run the app
+# Set the environment variable for Vite API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
+# Command to run the application
 CMD ["npm", "run", "preview"]
